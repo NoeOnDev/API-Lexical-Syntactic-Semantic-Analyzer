@@ -14,21 +14,40 @@ ORIGINS = os.getenv('ORIGINS')
 app = Flask(__name__)
 CORS(app, origins=ORIGINS)
 
-tokens = ('PR','ID','PI','PD','LI','LD','PC','VAR','OP','CO','ER')
+tokens = (
+    'PR', 'ID', 'PI', 'PD', 'LI', 'LD', 'PC', 'NUM', 'OP', 'CO', 'DOT', 'STRING'
+)
 
-t_PR = r'\b(programa|int|read|printf|la|es|end)\b'
-t_ID = r'\bsuma\b'
+reserved = {
+    'int': 'PR',
+    'for': 'PR'
+}
+
 t_PI = r'\('
 t_PD = r'\)'
-t_LI = r'{'
-t_LD = r'}'
+t_LI = r'\{'
+t_LD = r'\}'
 t_PC = r';'
-t_VAR = r'\b(a|b|c)\b'
-t_OP = r'\+|-|\*'
+t_OP = r'\+|-|\*|<=|='
 t_CO = r','
-t_ER = r'\b\w+\b'
+t_DOT = r'\.'
 
-t_ignore = ' \t".0'':=/<>_%&|!A^~?@#[]'
+def t_ID(t):
+    r'[a-zA-Z_][a-zA-Z_0-9]*'
+    t.type = reserved.get(t.value, 'ID')
+    return t
+
+def t_NUM(t):
+    r'\d+'
+    t.value = int(t.value)
+    return t
+
+def t_STRING(t):
+    r'\"([^\\\n]|(\\.))*?\"'
+    t.value = str(t.value)
+    return t
+
+t_ignore = ' \t'
 
 def t_newline(t):
     r'\n+'
@@ -45,8 +64,6 @@ def analyze_content(content):
     lexer.input(content)
     result = []
     for tok in lexer:
-        if tok.type == 'PR' and tok.value not in ['programa', 'int', 'read', 'printf', 'la', 'es', 'end']:
-            tok.type = 'ER'
         result.append({"id": str(uuid.uuid4()), "linea": tok.lineno, "type": tok.type, "value": tok.value, "token": tok.value})
     return result
 
@@ -63,7 +80,7 @@ def upload_file():
         if not result:
             return make_response(jsonify({"error": "Not found tokens in the file"}), 404)
         return jsonify(result)
-    
+
 @app.route('/analyze', methods=['POST'])
 def analyze_code():
     code = request.data.decode('utf-8')
