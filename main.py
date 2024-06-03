@@ -28,7 +28,7 @@ t_OP = r'\+|-|\*'
 t_CO = r','
 t_ER = r'\b\w+\b'
 
-t_ignore = ' \t".0'':=/<>_%&|!^~?@#[]'
+t_ignore = ' \t".0'':=/<>_%&|!A^~?@#[]'
 
 def t_newline(t):
     r'\n+'
