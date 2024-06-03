@@ -4,6 +4,7 @@ from dotenv import load_dotenv
 import os
 import uuid
 import ply.lex as lex
+import ply.yacc as yacc
 
 load_dotenv()
 
@@ -67,6 +68,44 @@ def analyze_content(content):
         result.append({"id": str(uuid.uuid4()), "linea": tok.lineno, "type": tok.type, "value": tok.value, "token": tok.value})
     return result
 
+def p_for_loop(p):
+    '''for_loop : PR PI declaration PC condition PC increment PD LI statement LD'''
+    p[0] = "Valid 'for' loop"
+
+def p_declaration(p):
+    '''declaration : PR ID OP NUM
+                   | ID OP NUM'''
+    pass
+
+def p_condition(p):
+    '''condition : ID OP NUM'''
+    pass
+
+def p_increment(p):
+    '''increment : ID OP ID'''
+    pass
+
+def p_statement(p):
+    '''statement : ID DOT ID DOT ID PI STRING PD PC'''
+    if p[1] != "system" or p[3] != "out" or p[5] != "println":
+        print(f"Error en la línea {p.lineno(1)}: 'system.out.println' incorrecto.")
+        raise SyntaxError
+
+def p_error(p):
+    if p:
+        print(f"Syntax error at '{p.value}' on line {p.lineno}")
+    else:
+        print("Syntax error at EOF")
+
+parser = yacc.yacc()
+
+def analyze_syntax(content):
+    try:
+        parser.parse(content, lexer=lexer)
+        return {"status": "success", "message": "Valid 'for' loop"}
+    except SyntaxError:
+        return {"status": "error", "message": "Invalid 'for' loop"}
+
 @app.route('/upload', methods=['POST'])
 def upload_file():
     if 'file' not in request.files:
@@ -76,20 +115,18 @@ def upload_file():
         return make_response(jsonify({"error": "No selected file"}), 400)
     if file:
         content = file.read().decode('utf-8')
-        result = analyze_content(content)
-        if not result:
-            return make_response(jsonify({"error": "Not found tokens in the file"}), 404)
-        return jsonify(result)
+        lex_result = analyze_content(content)
+        syntax_result = analyze_syntax(content)
+        return jsonify({"lexical_analysis": lex_result, "syntax_analysis": syntax_result})
 
 @app.route('/analyze', methods=['POST'])
 def analyze_code():
     code = request.data.decode('utf-8')
     if not isinstance(code, str):
         return make_response(jsonify({"error": "Invalid input"}), 400)
-    result = analyze_content(code)
-    if not result:
-        return make_response(jsonify({"error": "Not found tokens in the code"}), 404)
-    return jsonify(result)
+    lex_result = analyze_content(code)
+    syntax_result = analyze_syntax(code)
+    return jsonify({"lexical_analysis": lex_result, "syntax_analysis": syntax_result})
 
 @app.route('/')
 def hello_world():
