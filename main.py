@@ -8,9 +8,9 @@ import re
 
 load_dotenv()
 
-HOST = os.getenv('HOST', '127.0.0.1')
-PORT = int(os.getenv('PORT', 5000))
-ORIGINS = os.getenv('ORIGINS', '*')
+HOST = os.getenv('HOST')
+PORT = int(os.getenv('PORT'))
+ORIGINS = os.getenv('ORIGINS')
 
 app = Flask(__name__)
 CORS(app, origins=ORIGINS)
@@ -78,7 +78,7 @@ def analyze_content(content):
 
 def validar_hola_mundo(codigo):
     patron_clase = re.compile(r'public\s+class\s+\w+\s*\{')
-    patron_main = re.compile(r'public\s+static\s+void\s+main\s*\(\s*String\s*\[\s*\]\s*\w+\s*\)\s*\{')
+    patron_main = re.compile(r'public\s+static\s+void\s+main\s*\(\s*String\s*\[\s*\]\s*[a-zA-Z]+\s*\)\s*\{')
     patron_print = re.compile(r'System\.out\.println\s*\(\s*\"Hola Mundo!\"\s*\)\s*;')
     lineas = codigo.split('\n')
     
