@@ -21,7 +21,15 @@ tokens = (
 
 reserved = {
     'int': 'PR',
-    'for': 'PR'
+    'for': 'PR',
+    'public': 'PR',
+    'class': 'PR',
+    'static': 'PR',
+    'void': 'PR',
+    'String': 'PR',
+    'System': 'PR',
+    'out': 'PR',
+    'println': 'PR'
 }
 
 t_PI = r'\('
@@ -68,26 +76,31 @@ def analyze_content(content):
         result.append({"id": str(uuid.uuid4()), "linea": tok.lineno, "type": tok.type, "value": tok.value, "token": tok.value})
     return result
 
-def validar_bucle_for(codigo):
-    patron_for = re.compile(
-        r'for\s*\(\s*int\s+\w+\s*=\s*\d+\s*;\s*\w+\s*([<>=!]=|<|>|!=)\s*\d+\s*;\s*\w+\+\+\s*\)\s*\{\s*'
-    )
-    patron_print = re.compile(r'System\.out\.println\(".*"\s*\+\s*\w+\s*\)\s*;\s*')
+def validar_hola_mundo(codigo):
+    patron_clase = re.compile(r'public\s+class\s+\w+\s*\{')
+    patron_main = re.compile(r'public\s+static\s+void\s+main\s*\(\s*String\s*\[\s*\]\s*\w+\s*\)\s*\{')
+    patron_print = re.compile(r'System\.out\.println\s*\(\s*\"Hola Mundo!\"\s*\)\s*;')
     lineas = codigo.split('\n')
     
-    if len(lineas) < 3:
-        return False, "Código incompleto", None
+    if len(lineas) < 5:
+        return False, "Código incompleto", None, None
     
-    if not patron_for.match(lineas[0].strip()):
-        return False, "Error en la sintaxis del bucle for", 0
+    if not patron_clase.match(lineas[0].strip()):
+        error_pos = patron_clase.search(lineas[0])
+        return False, "Error en la sintaxis de la declaración de clase", 0, error_pos.start() if error_pos else None
     
-    if not patron_print.match(lineas[1].strip()):
-        return False, "Error en la sintaxis de System.out.println", 1
+    if not patron_main.match(lineas[1].strip()):
+        error_pos = patron_main.search(lineas[1])
+        return False, "Error en la sintaxis de la declaración del método main", 1, error_pos.start() if error_pos else None
     
-    if lineas[2].strip() != '}':
-        return False, "Falta el cierre del bloque", 2
+    if not patron_print.match(lineas[2].strip()):
+        error_pos = patron_print.search(lineas[2])
+        return False, "Error en la sintaxis de System.out.println", 2, error_pos.start() if error_pos else None
     
-    return True, "El bucle for es correcto", None
+    if lineas[3].strip() != '}' or lineas[4].strip() != '}':
+        return False, "Falta el cierre del bloque", 3 if lineas[3].strip() != '}' else 4, len(lineas[3]) if lineas[3].strip() != '}' else len(lineas[4])
+    
+    return True, "El programa Hola Mundo es correcto", None, None
 
 @app.route('/upload', methods=['POST'])
 def upload_file():
@@ -99,13 +112,14 @@ def upload_file():
     if file:
         content = file.read().decode('utf-8')
         lexical_result = analyze_content(content)
-        valido, mensaje, linea_error = validar_bucle_for(content)
+        valido, mensaje, linea_error, posicion_error = validar_hola_mundo(content)
         response = {
             "lexical_analysis": lexical_result,
-            "for_validation": {
+            "validation": {
                 "valid": valido,
                 "message": mensaje,
-                "line_error": linea_error
+                "line_error": linea_error,
+                "position_error": posicion_error
             }
         }
         if not lexical_result:
@@ -119,13 +133,14 @@ def analyze_code():
         return make_response(jsonify({"error": "Invalid input"}), 400)
     
     lexical_result = analyze_content(code)
-    valido, mensaje, linea_error = validar_bucle_for(code)
+    valido, mensaje, linea_error, posicion_error = validar_hola_mundo(code)
     response = {
         "lexical_analysis": lexical_result,
-        "for_validation": {
+        "validation": {
             "valid": valido,
             "message": mensaje,
-            "line_error": linea_error
+            "line_error": linea_error,
+            "position_error": posicion_error
         }
     }
     
