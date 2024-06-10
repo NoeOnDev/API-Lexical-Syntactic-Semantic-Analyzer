@@ -43,6 +43,22 @@ def p_statement_println(p):
     '''statement : PRINTLN LPAREN STRING RPAREN SEMICOLON'''
     p[0] = ('println', p[3])
 
+def p_statement_assignment(p):
+    '''statement : IDENTIFIER ASSIGN expression SEMICOLON'''
+    if p[1] not in variables:
+        raise Exception(f"Variable '{p[1]}' not declared")
+    if variables[p[1]] != 'int' or not isinstance(p[3], int):
+        raise Exception(f"Type mismatch in assignment to '{p[1]}'")
+    p[0] = ('assignment', p[1], p[3])
+
+def p_expression_number(p):
+    '''expression : NUMBER'''
+    p[0] = p[1]
+
+def p_expression_string(p):
+    '''expression : STRING'''
+    p[0] = p[1]
+
 def p_error(p):
     if p:
         print(f"Syntax error at '{p.value}'")
