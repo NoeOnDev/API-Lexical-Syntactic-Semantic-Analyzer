@@ -1,7 +1,7 @@
 import ply.lex as lex
 
 tokens = (
-    'FOR', 'INT', 'IDENTIFIER', 'NUMBER', 'LPAREN', 'RPAREN', 'LBRACE', 'RBRACE', 'SEMICOLON', 'LE', 'PRINTLN', 'STRING', 'ASSIGN', 'PLUS', 'INCREMENT'
+    'FOR', 'INT', 'IDENTIFIER', 'NUMBER', 'LPAREN', 'RPAREN', 'LBRACE', 'RBRACE', 'SEMICOLON', 'LE', 'PRINTLN', 'STRING', 'ASSIGN', 'PLUS', 'INCREMENT', 'DIV', 'MINUS', 'TIMES'
 )
 
 t_LPAREN  = r'\('
@@ -13,6 +13,9 @@ t_LE = r'<='
 t_ASSIGN = r'='
 t_PLUS = r'\+'
 t_INCREMENT = r'\+\+'
+t_DIV = r'/'
+t_MINUS = r'-'
+t_TIMES = r'\*'
 
 t_ignore = ' \t'
 
