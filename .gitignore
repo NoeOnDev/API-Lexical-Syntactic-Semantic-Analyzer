@@ -3,3 +3,7 @@ __pycache__
 parser.out
 parsetab.py
 HolaMundo.java
+ForJava.java
+lexer.py
+parsers.py
+app.py
