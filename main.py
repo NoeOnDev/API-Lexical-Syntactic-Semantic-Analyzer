@@ -20,7 +20,7 @@ CORS(app, resources={r"/*": {"origins": origins}})
 def analyze_lexical():
     code = request.json.get('code', '')
     if not code:
-        return jsonify({'error': 'No code provided'}), 400
+        return jsonify({'error': 'No se proporcionó código'}), 400
     tokens = analyze_code(code)
     return jsonify(tokens)
 
@@ -28,7 +28,7 @@ def analyze_lexical():
 def analyze_syntactic():
     code = request.json.get('code', '')
     if not code:
-        return jsonify({'error': 'No code provided'}), 400
+        return jsonify({'error': 'No se proporcionó código'}), 400
     result = parse_code(code)
     return jsonify(result)
 
@@ -36,7 +36,7 @@ def analyze_syntactic():
 def analyze_semantic():
     code = request.json.get('code', '')
     if not code:
-        return jsonify({'error': 'No code provided'}), 400
+        return jsonify({'error': 'No se proporcionó código'}), 400
     
     tokens = analyze_code(code)
     if 'error' in tokens:

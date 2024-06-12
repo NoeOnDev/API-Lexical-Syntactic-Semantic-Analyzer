@@ -30,9 +30,9 @@ def p_statement(p):
 def p_error(p):
     global error_message
     if p is None:
-        error_message = "Syntax error at EOF"
+        error_message = "Error de sintaxis en EOF"
     else:
-        error_message = f"Syntax error at '{p.value}'"
+        error_message = f"Error de sintaxis en '{p.value}'"
 
 parser = yacc.yacc()
 
