@@ -28,8 +28,8 @@ def analyze_syntactic():
     code = request.json.get('code', '')
     if not code:
         return jsonify({'error': 'No code provided'}), 400
-    parse_result = parse_code(code)
-    return jsonify(parse_result)
+    result = parse_code(code)
+    return jsonify(result)
 
 if __name__ == '__main__':
     app.run(host=host, port=port, debug=True)
