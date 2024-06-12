@@ -1,13 +1,13 @@
 import ply.lex as lex
 
 tokens = (
-    'FOR', 'LPAREN', 'RPAREN', 'SEMICOLON', 'INT', 'ID', 'EQ', 'LE', 'PLUS', 'LBRACE', 'RBRACE', 'PRINTLN', 'DOT', 'NUMBER', 'STRING'
+    'FOR', 'LPAREN', 'RPAREN', 'SEMICOLON', 'INT', 'ID', 'EQ', 'LE', 'PLUS', 'LBRACE', 'RBRACE', 'PRINTLN', 'DOT', 'NUMBER', 'STRING', 
+    'COMMENT', 'WHITESPACE', 'MINUS', 'TIMES', 'DIVIDE'
 )
 
 reserved = {
     'for': 'FOR',
     'int': 'INT',
-    'System.out.println': 'PRINTLN'
 }
 
 t_LPAREN = r'\('
@@ -16,14 +16,29 @@ t_SEMICOLON = r';'
 t_EQ = r'='
 t_LE = r'<='
 t_PLUS = r'\+'
+t_MINUS = r'-'
+t_TIMES = r'\*'
+t_DIVIDE = r'/'
 t_LBRACE = r'\{'
 t_RBRACE = r'\}'
 t_DOT = r'\.'
 t_STRING = r'\".*?\"'
 
+def t_COMMENT(t):
+    r'(/\*(.|\n)*?\*/)|(//.*)'
+    pass
+
+def t_WHITESPACE(t):
+    r'\s+'
+    pass
+
 def t_NUMBER(t):
     r'\d+'
     t.value = int(t.value)
+    return t
+
+def t_PRINTLN(t):
+    r'System\.out\.println'
     return t
 
 def t_ID(t):
@@ -31,7 +46,7 @@ def t_ID(t):
     t.type = reserved.get(t.value, 'ID')
     return t
 
-t_ignore = ' \t'
+t_ignore = ''
 
 def t_error(t):
     print(f"Carácter ilegal '{t.value[0]}'")
