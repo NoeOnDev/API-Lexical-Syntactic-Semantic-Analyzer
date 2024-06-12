@@ -46,8 +46,6 @@ def t_ID(t):
     t.type = reserved.get(t.value, 'ID')
     return t
 
-t_ignore = ''
-
 def t_error(t):
     print(f"Carácter ilegal '{t.value[0]}'")
     t.lexer.skip(1)
