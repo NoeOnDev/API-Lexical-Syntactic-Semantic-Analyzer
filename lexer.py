@@ -1,10 +1,15 @@
 import ply.lex as lex
 
 tokens = (
-    'FOR', 'LPAREN', 'RPAREN', 'SEMICOLON', 'INT', 'ID', 'EQ', 'LE', 'PLUS', 'LBRACE', 'RBRACE', 'PRINTLN', 'STRING'
+    'FOR', 'LPAREN', 'RPAREN', 'SEMICOLON', 'INT', 'ID', 'EQ', 'LE', 'PLUS', 'LBRACE', 'RBRACE', 'PRINTLN', 'DOT', 'NUMBER', 'STRING'
 )
 
-t_FOR = r'for'
+reserved = {
+    'for': 'FOR',
+    'int': 'INT',
+    'System.out.println': 'PRINTLN'
+}
+
 t_LPAREN = r'\('
 t_RPAREN = r'\)'
 t_SEMICOLON = r';'
@@ -13,16 +18,17 @@ t_LE = r'<='
 t_PLUS = r'\+'
 t_LBRACE = r'\{'
 t_RBRACE = r'\}'
-t_PRINTLN = r'System\.out\.println'
+t_DOT = r'\.'
 t_STRING = r'\".*?\"'
 
-def t_INT(t):
+def t_NUMBER(t):
     r'\d+'
     t.value = int(t.value)
     return t
 
 def t_ID(t):
     r'[a-zA-Z_][a-zA-Z_0-9]*'
+    t.type = reserved.get(t.value, 'ID')
     return t
 
 t_ignore = ' \t'
