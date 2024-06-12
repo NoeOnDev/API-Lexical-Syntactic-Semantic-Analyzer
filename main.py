@@ -4,6 +4,7 @@ from flask_cors import CORS
 from dotenv import load_dotenv
 from lexer import analyze_code
 from syntactic import parse_code
+from semantic import analyze_semantics
 
 load_dotenv()
 
@@ -30,6 +31,23 @@ def analyze_syntactic():
         return jsonify({'error': 'No code provided'}), 400
     result = parse_code(code)
     return jsonify(result)
+
+@app.route('/analyze_semantic', methods=['POST'])
+def analyze_semantic():
+    code = request.json.get('code', '')
+    if not code:
+        return jsonify({'error': 'No code provided'}), 400
+    
+    tokens = analyze_code(code)
+    if 'error' in tokens:
+        return jsonify(tokens)
+    
+    parsed_code = parse_code(code)
+    if 'error' in parsed_code:
+        return jsonify(parsed_code)
+    
+    semantic_result = analyze_semantics(parsed_code)
+    return jsonify(semantic_result)
 
 if __name__ == '__main__':
     app.run(host=host, port=port, debug=True)
