@@ -47,7 +47,7 @@ def t_ID(t):
     return t
 
 def t_error(t):
-    print(f"Carácter ilegal '{t.value[0]}'")
+    print(f"Carácter ilegal '{t.value[0]}' en línea {t.lineno}, posición {t.lexpos}")
     t.lexer.skip(1)
 
 lexer = lex.lex()
@@ -59,5 +59,5 @@ def analyze_code(code):
         tok = lexer.token()
         if not tok:
             break
-        tokens.append((tok.type, tok.value))
+        tokens.append((tok.type, tok.value, tok.lineno, tok.lexpos))
     return tokens

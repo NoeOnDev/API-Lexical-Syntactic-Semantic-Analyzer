@@ -26,22 +26,9 @@ def p_statement(p):
     p[0] = ('statement', p[1], p[3])
 
 def p_error(p):
-    if p:
-        error_message = f"Syntax error at '{p.value}'"
-        error_position = {'line': p.lineno, 'position': p.lexpos}
-        raise SyntaxError(error_message, error_position)
-    else:
-        error_message = "Syntax error at EOF"
-        raise SyntaxError(error_message, None)
+    print(f"Syntax error at '{p.value}'")
 
 parser = yacc.yacc()
 
 def parse_code(code):
-    try:
-        result = parser.parse(code)
-        return {'result': result, 'message': "El ciclo for cumple con la estructura", 'error': None}
-    except SyntaxError as e:
-        error_message, error_position = e.args
-        return {'result': None, 'message': error_message, 'error': error_position}
-    except Exception as e:
-        return {'result': None, 'message': str(e), 'error': None}
+    return parser.parse(code)
