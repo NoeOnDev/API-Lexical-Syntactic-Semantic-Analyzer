@@ -1,50 +1,45 @@
 import ply.lex as lex
 
 tokens = (
-    'FOR', 'LPAREN', 'RPAREN', 'SEMICOLON', 'INT', 'ID', 'EQ', 'LE', 'PLUS', 'LBRACE', 'RBRACE', 'PRINTLN', 'DOT', 'NUMBER', 'STRING', 
-    'COMMENT', 'WHITESPACE', 'MINUS', 'TIMES', 'DIVIDE'
+    'INICIO', 'CADENA', 'ENTERO', 'VAR', 'NUM', 'PROCESO', 'SI', 'IGUAL', 'IGUAL_IGUAL', 'FIN', 'PUNTOYCOMA', 'LLAVE_ABRIR', 'LLAVE_CERRAR', 'LPAREN', 'RPAREN', 'STRING',
 )
 
 reserved = {
-    'for': 'FOR',
-    'int': 'INT',
+    'inicio': 'INICIO',
+    'cadena': 'CADENA',
+    'entero': 'ENTERO',
+    'proceso': 'PROCESO',
+    'si': 'SI',
+    'fin': 'FIN',
 }
 
+t_IGUAL = r'='
+t_IGUAL_IGUAL = r'=='
+t_PUNTOYCOMA = r';'
+t_LLAVE_ABRIR = r'\{'
+t_LLAVE_CERRAR = r'\}'
 t_LPAREN = r'\('
 t_RPAREN = r'\)'
-t_SEMICOLON = r';'
-t_EQ = r'='
-t_LE = r'<='
-t_PLUS = r'\+'
-t_MINUS = r'-'
-t_TIMES = r'\*'
-t_DIVIDE = r'/'
-t_LBRACE = r'\{'
-t_RBRACE = r'\}'
-t_DOT = r'\.'
-t_STRING = r'\".*?\"'
 
-def t_COMMENT(t):
-    r'(/\*(.|\n)*?\*/)|(//.*)'
-    pass
+def t_STRING(t):
+    r'\"([^\\\n]|(\\.))*?\"'
+    return t
 
-def t_WHITESPACE(t):
-    r'\s+'
-    pass
+def t_VAR(t):
+    r'[a-zA-Z_][a-zA-Z_0-9]*'
+    t.type = reserved.get(t.value, 'VAR')
+    return t
 
-def t_NUMBER(t):
+def t_NUM(t):
     r'\d+'
     t.value = int(t.value)
     return t
 
-def t_PRINTLN(t):
-    r'System\.out\.println'
-    return t
+t_ignore = ' \t'
 
-def t_ID(t):
-    r'[a-zA-Z_][a-zA-Z_0-9]*'
-    t.type = reserved.get(t.value, 'ID')
-    return t
+def t_COMMENT(t):
+    r'\#.*'
+    pass
 
 def t_error(t):
     print(f"Carácter ilegal '{t.value[0]}' en línea {t.lineno}, posición {t.lexpos}")
