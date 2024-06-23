@@ -1,48 +1,55 @@
 import ply.lex as lex
 
 tokens = (
-    'INICIO', 'CADENA', 'ENTERO', 'VAR', 'NUM', 'PROCESO', 'SI', 'IGUAL', 'IGUAL_IGUAL', 'FIN', 'PUNTOYCOMA', 'LLAVE_ABRIR', 'LLAVE_CERRAR', 'LPAREN', 'RPAREN', 'STRING',
+    'PUBLIC', 'CLASS', 'STATIC', 'VOID', 'MAIN', 'STRING',
+    'LPAREN', 'RPAREN', 'LBRACE', 'RBRACE', 'SEMICOLON', 'SYSOUT',
+    'ID', 'TEXT', 'LBRACKET', 'RBRACKET', 'NUMBER', 'PLUS', 'MINUS', 'TIMES', 'DIVIDE'
 )
 
 reserved = {
-    'inicio': 'INICIO',
-    'cadena': 'CADENA',
-    'entero': 'ENTERO',
-    'proceso': 'PROCESO',
-    'si': 'SI',
-    'fin': 'FIN',
+    'public': 'PUBLIC',
+    'class': 'CLASS',
+    'static': 'STATIC',
+    'void': 'VOID',
+    'main': 'MAIN',
+    'String': 'STRING'
 }
 
-t_IGUAL = r'='
-t_IGUAL_IGUAL = r'=='
-t_PUNTOYCOMA = r';'
-t_LLAVE_ABRIR = r'\{'
-t_LLAVE_CERRAR = r'\}'
+t_PLUS = r'\+'
+t_MINUS = r'-'
+t_TIMES = r'\*'
+t_DIVIDE = r'/'
 t_LPAREN = r'\('
 t_RPAREN = r'\)'
+t_LBRACE = r'\{'
+t_RBRACE = r'\}'
+t_SEMICOLON = r';'
+t_LBRACKET = r'\['
+t_RBRACKET = r'\]'
 
-def t_STRING(t):
+def t_SYSOUT(t):
+    r'System\.out\.println'
+    return t
+
+def t_TEXT(t):
     r'\"([^\\\n]|(\\.))*?\"'
+    t.type = 'TEXT'
     return t
 
-def t_VAR(t):
-    r'[a-zA-Z_][a-zA-Z_0-9]*'
-    t.type = reserved.get(t.value, 'VAR')
-    return t
-
-def t_NUM(t):
+def t_NUMBER(t):
     r'\d+'
-    t.value = int(t.value)
+    t.type = 'NUMBER'
     return t
 
-t_ignore = ' \t'
+def t_ID(t):
+    r'[a-zA-Z_][a-zA-Z_0-9]*'
+    t.type = reserved.get(t.value, 'ID')
+    return t
 
-def t_COMMENT(t):
-    r'\#.*'
-    pass
+t_ignore = ' \t\n'
 
 def t_error(t):
-    print(f"Carácter ilegal '{t.value[0]}' en línea {t.lineno}, posición {t.lexpos}")
+    print(f"Illegal character '{t.value[0]}' at line {t.lineno}")
     t.lexer.skip(1)
 
 lexer = lex.lex()

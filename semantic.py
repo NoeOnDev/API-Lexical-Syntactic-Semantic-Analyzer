@@ -6,51 +6,52 @@ def analyze_semantics(parsed_code):
     if result is None:
         return {'error': 'No se proporcionó código analizado'}
     
-    declarations = result[1]
-    statements = result[2]
+    try:
+        main_method = result[2]
+        block = main_method[1]
+        statements = block[1]
+    except IndexError:
+        return {'error': 'La estructura del código analizado no es la esperada'}
     
     declared_vars = set()
     errors = []
 
-    if declarations[0] == 'declarations':
-        current = declarations
-        while current:
-            if current[0] == 'declarations':
-                declaration = current[1]
-                if declaration[0] == 'declaration':
-                    var_name = declaration[1]
-                    declared_vars.add(var_name)
-                if len(current) > 2:
-                    current = current[2]
-                else:
-                    current = None
-            else:
-                break
-
     def check_statements(statements):
-        current = statements
-        while current:
-            if current[0] == 'statements':
-                statement = current[1]
-                if statement[0] == 'statement' and statement[1] == 'if':
-                    condition = statement[2]
-                    if condition[0] == 'condition':
-                        var_name = condition[1]
-                        if var_name not in declared_vars:
-                            errors.append(f'Variable no declarada usada en condición: {var_name}')
-                    block = statement[3]
-                    if block[0] == 'block':
-                        check_statements(block[1])
-                elif statement[0] == 'assignment':
-                    var_name = statement[1]
-                    if var_name not in declared_vars and var_name != 'ver':
-                        errors.append(f'Variable no declarada usada en asignación: {var_name}')
-                if len(current) > 2:
-                    current = current[2]
+        if isinstance(statements, tuple) and statements[0] == 'statements':
+            statement = statements[1]
+            if statement[0] == 'statement' and statement[1] == 'SYSOUT':
+                expression = statement[2]
+                check_expression(expression)
+            if len(statements) > 2:
+                check_statements(statements[2])
+
+    def check_expression(expression):
+        if isinstance(expression, tuple) and expression[0] == 'binary_op':
+            left = expression[2]
+            right = expression[3]
+            op = expression[1]
+            left_type = get_expression_type(left)
+            right_type = get_expression_type(right)
+            if left_type != right_type:
+                errors.append(f"Type mismatch in expression: {left_type} {op} {right_type}")
+        else:
+            get_expression_type(expression)
+
+    def get_expression_type(expression):
+        if isinstance(expression, tuple):
+            if expression[0] == 'term':
+                if expression[1].startswith('"'):
+                    return 'string'
+                elif expression[1].isdigit():
+                    return 'int'
                 else:
-                    current = None
+                    return 'variable'
+        elif isinstance(expression, str):
+            if expression.isdigit():
+                return 'int'
             else:
-                break
+                return 'variable'
+        return 'unknown'
 
     check_statements(statements)
 
