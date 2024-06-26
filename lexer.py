@@ -4,7 +4,7 @@ tokens = (
     'PUBLIC', 'CLASS', 'STATIC', 'VOID', 'MAIN', 'STRING', 'INT',
     'LPAREN', 'RPAREN', 'LBRACE', 'RBRACE', 'SEMICOLON', 'SYSOUT',
     'ID', 'TEXT', 'LBRACKET', 'RBRACKET', 'NUMBER', 'PLUS', 'MINUS', 'TIMES', 'DIVIDE',
-    'FOR', 'EQUALS', 'LE', 'LT', 'GE', 'GT', 'ASSIGN', 'INCREMENT'
+    'FOR', 'EQUALS', 'LE', 'LT', 'GE', 'GT', 'ASSIGN', 'INCREMENT', 'DOT'
 )
 
 reserved = {
@@ -36,6 +36,7 @@ t_RBRACE = r'\}'
 t_SEMICOLON = r';'
 t_LBRACKET = r'\['
 t_RBRACKET = r'\]'
+t_DOT = r'\.'
 
 def t_SYSOUT(t):
     r'System\.out\.println'
