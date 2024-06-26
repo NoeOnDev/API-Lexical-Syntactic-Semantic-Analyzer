@@ -1,9 +1,10 @@
 import ply.lex as lex
 
 tokens = (
-    'PUBLIC', 'CLASS', 'STATIC', 'VOID', 'MAIN', 'STRING',
+    'PUBLIC', 'CLASS', 'STATIC', 'VOID', 'MAIN', 'STRING', 'INT',
     'LPAREN', 'RPAREN', 'LBRACE', 'RBRACE', 'SEMICOLON', 'SYSOUT',
-    'ID', 'TEXT', 'LBRACKET', 'RBRACKET', 'NUMBER', 'PLUS', 'MINUS', 'TIMES', 'DIVIDE'
+    'ID', 'TEXT', 'LBRACKET', 'RBRACKET', 'NUMBER', 'PLUS', 'MINUS', 'TIMES', 'DIVIDE',
+    'FOR', 'EQUALS', 'LE', 'LT', 'GE', 'GT', 'ASSIGN', 'INCREMENT'
 )
 
 reserved = {
@@ -12,13 +13,22 @@ reserved = {
     'static': 'STATIC',
     'void': 'VOID',
     'main': 'MAIN',
-    'String': 'STRING'
+    'String': 'STRING',
+    'int': 'INT',
+    'for': 'FOR'
 }
 
 t_PLUS = r'\+'
 t_MINUS = r'-'
 t_TIMES = r'\*'
 t_DIVIDE = r'/'
+t_EQUALS = r'=='
+t_LE = r'<='
+t_LT = r'<'
+t_GE = r'>='
+t_GT = r'>'
+t_ASSIGN = r'='
+t_INCREMENT = r'\+\+'
 t_LPAREN = r'\('
 t_RPAREN = r'\)'
 t_LBRACE = r'\{'

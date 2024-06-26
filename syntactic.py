@@ -24,15 +24,39 @@ def p_statements(p):
         p[0] = ('statements', p[1], p[2])
 
 def p_statement(p):
-    '''statement : SYSOUT LPAREN expression RPAREN SEMICOLON'''
-    p[0] = ('statement', p[3])
+    '''statement : SYSOUT LPAREN expression RPAREN SEMICOLON
+                 | declaration SEMICOLON
+                 | assignment SEMICOLON
+                 | for_loop'''
+    p[0] = ('statement', p[1])
+
+def p_declaration(p):
+    '''declaration : INT ID ASSIGN expression'''
+    p[0] = ('declaration', p[2], p[4])
+
+def p_assignment(p):
+    '''assignment : ID ASSIGN expression
+                  | ID INCREMENT'''
+    if len(p) == 4:
+        p[0] = ('assignment', p[1], p[3])
+    else:
+        p[0] = ('increment', p[1])
+
+def p_for_loop(p):
+    '''for_loop : FOR LPAREN declaration SEMICOLON expression SEMICOLON assignment RPAREN block'''
+    p[0] = ('for_loop', p[3], p[5], p[7], p[9])
 
 def p_expression(p):
     '''expression : term
                   | expression PLUS term
                   | expression MINUS term
                   | expression TIMES term
-                  | expression DIVIDE term'''
+                  | expression DIVIDE term
+                  | expression EQUALS term
+                  | expression LE term
+                  | expression LT term
+                  | expression GE term
+                  | expression GT term'''
     if len(p) == 2:
         p[0] = p[1]
     else:

@@ -19,11 +19,44 @@ def analyze_semantics(parsed_code):
     def check_statements(statements):
         if isinstance(statements, tuple) and statements[0] == 'statements':
             statement = statements[1]
-            if statement[0] == 'statement' and statement[1] == 'SYSOUT':
-                expression = statement[2]
-                check_expression(expression)
+            if statement[0] == 'statement':
+                if statement[1][0] == 'SYSOUT':
+                    expression = statement[1][2]
+                    check_expression(expression)
+                elif statement[1][0] == 'declaration':
+                    var_name = statement[1][1]
+                    declared_vars.add(var_name)
+                    check_expression(statement[1][2])
+                elif statement[1][0] == 'assignment':
+                    var_name = statement[1][1]
+                    if var_name not in declared_vars:
+                        errors.append(f'Variable no declarada usada en asignación: {var_name}')
+                    check_expression(statement[1][2])
+                elif statement[1][0] == 'for_loop':
+                    check_for_loop(statement[1])
             if len(statements) > 2:
                 check_statements(statements[2])
+
+    def check_for_loop(for_loop):
+        declaration = for_loop[1]
+        condition = for_loop[2]
+        assignment = for_loop[3]
+        block = for_loop[4]
+
+        var_name = declaration[1]
+        declared_vars.add(var_name)
+
+        check_expression(declaration[2])
+        check_expression(condition)
+        
+        if assignment[0] == 'increment':
+            if assignment[1] not in declared_vars:
+                errors.append(f'Variable no declarada usada en incremento: {assignment[1]}')
+        else:
+            check_expression(assignment[2])
+        
+        check_statements(block[1])
+
 
     def check_expression(expression):
         if isinstance(expression, tuple) and expression[0] == 'binary_op':
