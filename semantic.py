@@ -68,6 +68,14 @@ def analyze_semantics(parsed_code):
             right_type = get_expression_type(right)
             if left_type != right_type:
                 errors.append(f"No coinciden los tipos en la expresión: {left_type} {op} {right_type}")
+        elif isinstance(expression, tuple) and expression[0] == 'term':
+            term_type = get_expression_type(expression)
+            if term_type == 'unknown':
+                errors.append(f'Variable no declarada usada en la expresión: {expression[1]}')
+        elif isinstance(expression, str):
+            term_type = get_expression_type(expression)
+            if term_type == 'unknown':
+                errors.append(f'Variable no declarada usada en la expresión: {expression}')
         else:
             get_expression_type(expression)
 
