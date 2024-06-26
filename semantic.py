@@ -13,7 +13,7 @@ def analyze_semantics(parsed_code):
     except IndexError:
         return {'error': 'La estructura del código analizado no es la esperada'}
     
-    declared_vars = set()
+    declared_vars = {}
     errors = []
 
     def check_statements(statements):
@@ -25,7 +25,8 @@ def analyze_semantics(parsed_code):
                     check_expression(expression)
                 elif statement[1][0] == 'declaration':
                     var_name = statement[1][1]
-                    declared_vars.add(var_name)
+                    var_type = 'int'
+                    declared_vars[var_name] = var_type
                     check_expression(statement[1][2])
                 elif statement[1][0] == 'assignment':
                     var_name = statement[1][1]
@@ -44,7 +45,7 @@ def analyze_semantics(parsed_code):
         block = for_loop[4]
 
         var_name = declaration[1]
-        declared_vars.add(var_name)
+        declared_vars[var_name] = 'int'
 
         check_expression(declaration[2])
         check_expression(condition)
@@ -66,7 +67,7 @@ def analyze_semantics(parsed_code):
             left_type = get_expression_type(left)
             right_type = get_expression_type(right)
             if left_type != right_type:
-                errors.append(f"Type mismatch in expression: {left_type} {op} {right_type}")
+                errors.append(f"No coinciden los tipos en la expresión: {left_type} {op} {right_type}")
         else:
             get_expression_type(expression)
 
@@ -78,12 +79,12 @@ def analyze_semantics(parsed_code):
                 elif expression[1].isdigit():
                     return 'int'
                 else:
-                    return 'variable'
+                    return declared_vars.get(expression[1], 'unknown')
         elif isinstance(expression, str):
             if expression.isdigit():
                 return 'int'
             else:
-                return 'variable'
+                return declared_vars.get(expression, 'unknown')
         return 'unknown'
 
     check_statements(statements)

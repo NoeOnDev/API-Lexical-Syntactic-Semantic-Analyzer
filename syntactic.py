@@ -83,4 +83,4 @@ def parse_code(code):
     if result is None:
         return {"error": error_message}
     else:
-        return {"success": "Syntax analysis completed successfully. The program structure is correct.", "result": result}
+        return {"success": "El análisis de sintaxis se completó correctamente. La estructura del programa es correcta.", "result": result}
